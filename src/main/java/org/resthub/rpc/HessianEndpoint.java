@@ -1,6 +1,6 @@
 /**
  * Copyright 2010 Emmanuel Bourg
- * Copyright 2012 Resthub.org
+ * Copyright 2012 resthub.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

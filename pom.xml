@@ -3,7 +3,8 @@
   <groupId>org.resthub</groupId>
   <artifactId>spring-amqp-hessian</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Hessian Spring AMQP - RPC over Spring AMQP with Hessian</name>
+  <name>Hessian Spring AMQP</name>
+  <description>RPC over Spring AMQP with Hessian</description>
   
   <dependencies>
     <dependency>
