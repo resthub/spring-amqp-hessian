@@ -76,7 +76,7 @@ public class AMQPHessianProxy implements InvocationHandler
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         String methodName = method.getName();
-        Class[] params = method.getParameterTypes();
+        Class<?>[] params = method.getParameterTypes();
 
         // equals and hashCode are special cased
         if (methodName.equals("equals") && params.length == 1 && params[0].equals(Object.class))
@@ -195,7 +195,7 @@ public class AMQPHessianProxy implements InvocationHandler
     /**
      * Return the name of the request exchange for the service.
      */
-    private String getRequestExchangeName(Class cls)
+    private String getRequestExchangeName(Class<?> cls)
     {
         String requestExchange = cls.getSimpleName();
         if (_factory.getQueuePrefix() != null)
@@ -209,7 +209,7 @@ public class AMQPHessianProxy implements InvocationHandler
     /**
      * Return the name of the request queue for the service.
      */
-    private String getRequestQueueName(Class cls)
+    private String getRequestQueueName(Class<?> cls)
     {
         String requestQueue = cls.getSimpleName();
         if (_factory.getQueuePrefix() != null)

@@ -41,7 +41,7 @@ import com.caucho.hessian.server.HessianSkeleton;
  */
 public class RawMessageDelegate {
     
-    private Class serviceAPI;
+    private Class<?> serviceAPI;
     private Object serviceImpl;
     private SerializerFactory serializerFactory;
     
@@ -49,7 +49,7 @@ public class RawMessageDelegate {
         
     }
     
-    public RawMessageDelegate(Class serviceAPI, Object serviceImpl, SerializerFactory serializerFactory){
+    public RawMessageDelegate(Class<?> serviceAPI, Object serviceImpl, SerializerFactory serializerFactory){
         this.serviceAPI = serviceAPI;
         this.serviceImpl = serviceImpl;
         this.serializerFactory = serializerFactory;
@@ -58,7 +58,7 @@ public class RawMessageDelegate {
     /**
      * Specifies the interface of the service.
      */
-    public void setServiceAPI(Class serviceAPI)
+    public void setServiceAPI(Class<?> serviceAPI)
     {
         this.serviceAPI = serviceAPI;
     }

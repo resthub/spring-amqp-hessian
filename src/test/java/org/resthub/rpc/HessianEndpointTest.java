@@ -48,13 +48,11 @@ public class HessianEndpointTest extends AMQPHessianProxyTest
     {
         startEndpointWithPrefix();
         
-        AMQPHessianProxyFactoryBean factory = new AMQPHessianProxyFactoryBean();
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
         factory.setQueuePrefix("foo");
-        factory.setServiceInterface(EchoService.class);
         factory.setConnectionFactory(connectionFactory);
-        factory.afterPropertiesSet();
-        EchoService service = (EchoService) factory.getObject();
+        EchoService service = factory.create(EchoService.class);
         String message = "Hello Hessian!";
         
         assertEquals(message, service.echo(message));

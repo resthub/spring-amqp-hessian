@@ -19,6 +19,7 @@ package org.resthub.rpc;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Proxy;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -218,6 +219,22 @@ public class AMQPHessianProxyFactory implements InitializingBean
      */
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
+    }
+    
+    /**
+     * Creates a new proxy from the specified interface.
+     * @param api the interface
+     * @return the proxy to the object with the specified interface
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T create(Class<T> api){
+        this.afterPropertiesSet();
+        if (null == api || ! api.isInterface()){
+            throw new IllegalArgumentException("Parameter 'api' is required");
+        }
+        
+        AMQPHessianProxy handler = new AMQPHessianProxy(this);
+        return (T) Proxy.newProxyInstance(api.getClassLoader(), new Class[]{api}, handler);
     }
     
     AbstractHessianInput getHessianInput(InputStream is)

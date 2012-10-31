@@ -28,7 +28,6 @@ import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.FailingService;
 import org.resthub.rpc.service.FailingServiceEndpoint;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -65,12 +64,10 @@ public class AMQPHessianProxyTest
     {
         startEndpoint();
         
-        AMQPHessianProxyFactoryBean factory = new AMQPHessianProxyFactoryBean();
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
-        factory.setServiceInterface(EchoService.class);
         factory.setConnectionFactory(connectionFactory);
-        factory.afterPropertiesSet();
-        EchoService service = (EchoService) factory.getObject();
+        EchoService service = factory.create(EchoService.class);
         String message = "Hello Hessian!";
 
         assertEquals(message, service.echo(message));
@@ -82,13 +79,11 @@ public class AMQPHessianProxyTest
     {
         startEndpoint();
         
-        AMQPHessianProxyFactoryBean factory = new AMQPHessianProxyFactoryBean();
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
         factory.setCompressed(true);
-        factory.setServiceInterface(EchoService.class);
         factory.setConnectionFactory(connectionFactory);
-        factory.afterPropertiesSet();
-        EchoService service = (EchoService) factory.getObject();
+        EchoService service = factory.create(EchoService.class);
         String message = "Hello Hessian!";
 
         try
@@ -113,13 +108,10 @@ public class AMQPHessianProxyTest
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
         
-        AMQPHessianProxyFactoryBean factory = new AMQPHessianProxyFactoryBean();
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(3000);
-        factory.setServiceInterface(FailingService.class);
         factory.setConnectionFactory(connectionFactory);
-        factory.afterPropertiesSet();
-        FailingService service = (FailingService) factory.getObject();
-        System.out.println(service);
+        FailingService service = factory.create(FailingService.class);
         
         try
         {
@@ -141,12 +133,10 @@ public class AMQPHessianProxyTest
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
         
-        AMQPHessianProxyFactoryBean factory = new AMQPHessianProxyFactoryBean();
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
-        factory.setServiceInterface(FailingService.class);
         factory.setConnectionFactory(connectionFactory);
-        factory.afterPropertiesSet();
-        FailingService service = (FailingService) factory.getObject();
+        FailingService service = factory.create(FailingService.class);
         
         try
         {
@@ -166,12 +156,10 @@ public class AMQPHessianProxyTest
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
         
-        AMQPHessianProxyFactoryBean factory = new AMQPHessianProxyFactoryBean();
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
-        factory.setServiceInterface(EchoService.class);
         factory.setConnectionFactory(connectionFactory);
-        factory.afterPropertiesSet();
-        EchoService service = (EchoService) factory.getObject();
+        EchoService service = factory.create(EchoService.class);
         
         try
         {

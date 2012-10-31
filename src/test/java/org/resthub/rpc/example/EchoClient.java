@@ -26,8 +26,9 @@ public class EchoClient {
 //        connectionFactory.setPassword("guest");
 //        
 //        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+//        factory.setConnectionFactory(connectionFactory);
 //        factory.setReadTimeout(3000);
-//        EchoService service = factory.create(EchoService.class, connectionFactory, null);
+//        EchoService service = factory.create(EchoService.class);
 //        
 //        System.out.println(service.echo("Hello AMQP!"));
 //        connectionFactory.destroy();
@@ -37,9 +38,6 @@ public class EchoClient {
         
         EchoService service = (EchoService) context.getBean("echoService");
         System.out.println(service.echo("Hello AMQP!"));
-        
-//        FailingService failing = (FailingService) context.getBean("serializationError");
-//        failing.getNotSerializable();
         
         context.close();
         

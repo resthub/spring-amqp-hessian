@@ -37,7 +37,7 @@ import com.caucho.hessian.io.SerializerFactory;
  */
 public class HessianEndpoint implements InitializingBean, DisposableBean
 {
-    private Class serviceAPI;
+    private Class<?> serviceAPI;
     private Object serviceImpl;
     private SerializerFactory serializerFactory;
     private ConnectionFactory connectionFactory;
@@ -71,7 +71,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     /**
      * Specifies the interface of the service.
      */
-    public void setServiceAPI(Class serviceAPI)
+    public void setServiceAPI(Class<?> serviceAPI)
     {
         this.serviceAPI = serviceAPI;
     }
@@ -138,14 +138,14 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         getSerializerFactory().setSendCollectionType(sendType);
     }
 
-    private Class findRemoteAPI(Class implClass)
+    private Class<?> findRemoteAPI(Class<?> implClass)
     {
         if (implClass == null)
         {
             return null;
         }
         
-        Class[] interfaces = implClass.getInterfaces();
+        Class<?>[] interfaces = implClass.getInterfaces();
 
         if (interfaces.length == 1)
         {
@@ -159,7 +159,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
      * Return the name of the request queue for the service.
      * The queue name is based on the class of the API implemented.
      */
-    private String getRequestQueueName(Class cls)
+    private String getRequestQueueName(Class<?> cls)
     {
         String requestQueue = cls.getSimpleName();
         if (queuePrefix != null)
@@ -185,13 +185,10 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     }
 
     /**
-     * Starts the endpoint on the connection specified. A session bound to a
-     * dedicated queue is created on the connection and a listener is installed
-     * to respond to hessian requests. The endpoint is stopped by closing the
-     * session returned.
-     * 
-     * @param conn The AMQP connection
-     * @return the AMQP session handling the requests for the endpoint
+     * Starts the endpoint on the connection specified.
+     * A listener container is launched on a created queue. The listener will
+     * respond to hessian requests. The endpoint is closed by calling the destroy 
+     * method.
      */
     public void run()
     {

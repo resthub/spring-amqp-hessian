@@ -30,7 +30,6 @@ public class EchoServer {
 //        
 //        connectionFactory.destroy();
         
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext(
-                "classpath:/applicationContext-server.xml");
+        new GenericXmlApplicationContext("classpath:/applicationContext-server.xml");
     }
 }
