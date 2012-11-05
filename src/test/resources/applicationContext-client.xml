@@ -1,0 +1,51 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+                           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Connexion RabbitMQ -->
+    <rabbit:connection-factory id="connectionFactory"
+        host="localhost" port="5672" username="guest" password="guest"/>
+        
+    <bean id="echoService" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+    </bean>
+    
+    <bean id="echoServiceTest" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="readTimeout" value="5000"/>
+    </bean>
+    
+    <bean id="echoServiceExceptionTest" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="readTimeout" value="5000"/>
+        <property name="compressed" value="true"/>
+    </bean>
+    
+    <bean id="echoServicePrefix" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="queuePrefix" value="foo"/>
+    </bean>
+    
+    <bean id="testTimeout" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.FailingService"/>
+        <property name="readTimeout" value="3000"/>
+    </bean>
+
+    <bean id="serializationError" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.FailingService"/>
+        <property name="readTimeout" value="5000"/>
+    </bean>
+</beans>

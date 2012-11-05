@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+                           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Connexion RabbitMQ -->
+	<rabbit:connection-factory id="connectionFactory"
+		host="localhost" port="5672" username="guest" password="guest"/>
+	
+	<bean id="echoServiceImpl" class="org.resthub.rpc.service.EchoServiceImpl"/>
+	<bean id="failingServiceImpl" class="org.resthub.rpc.service.FailingServiceImpl"/>
+	
+	<bean id="echoEndpoint" 
+	   class="org.resthub.rpc.HessianEndpoint">
+	   <constructor-arg index="0" ref="echoServiceImpl"/>
+	   <property name="connectionFactory" ref="connectionFactory" />
+	</bean>
+	
+	<bean id="failingEndpoint" 
+       class="org.resthub.rpc.HessianEndpoint">
+       <constructor-arg index="0" ref="failingServiceImpl"/>
+       <property name="connectionFactory" ref="connectionFactory" />
+    </bean>
+    
+    <bean id="echoEndpointPrefix" 
+       class="org.resthub.rpc.HessianEndpoint">
+       <constructor-arg index="0" ref="echoServiceImpl"/>
+       <property name="connectionFactory" ref="connectionFactory" />
+       <property name="queuePrefix" value="foo"/>
+    </bean>
+	
+</beans>
