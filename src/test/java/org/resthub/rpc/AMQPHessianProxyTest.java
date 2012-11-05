@@ -28,7 +28,8 @@ import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.FailingService;
 import org.resthub.rpc.service.FailingServiceEndpoint;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 
@@ -38,7 +39,7 @@ public class AMQPHessianProxyTest
 
     protected CachingConnectionFactory connectionFactory;
 
-    @BeforeTest
+    @BeforeClass
     protected void setUp() throws Exception
     {
         connectionFactory = new CachingConnectionFactory("localhost", 5672);
@@ -46,14 +47,15 @@ public class AMQPHessianProxyTest
         connectionFactory.setPassword("guest");
     }
 
-//    @AfterTest
-//    protected void tearDown() throws Exception
-//    {
-//        connectionFactory.destroy();
-//    }
+    @AfterClass
+    protected void tearDown() throws Exception
+    {
+        connectionFactory.destroy();
+    }
 
     protected void startEndpoint()
     {
+        System.out.println(connectionFactory);
         EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
