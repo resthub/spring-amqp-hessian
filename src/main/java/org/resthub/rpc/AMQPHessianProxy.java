@@ -186,7 +186,8 @@ public class AMQPHessianProxy implements InvocationHandler
         }
         
         Message message = new Message(payload, messageProperties);
-        Message response = template.sendAndReceive(getRequestExchangeName(method.getDeclaringClass()), message);
+        Message response = template.sendAndReceive(
+                getRequestExchangeName(method.getDeclaringClass()), getRequestQueueName(method.getDeclaringClass()), message);
         
         return response;
     }
@@ -229,9 +230,9 @@ public class AMQPHessianProxy implements InvocationHandler
     private void createQueue(ConnectionFactory connectionFactory, String name)
     {
         AmqpAdmin admin = new RabbitAdmin(connectionFactory);
-        Queue requestQueue = new Queue(name, true, false, false);
+        Queue requestQueue = new Queue(name, false, false, false);
         admin.declareQueue(requestQueue);
-        DirectExchange requestExchange = new DirectExchange(name, true, false);
+        DirectExchange requestExchange = new DirectExchange(name, false, false);
         admin.declareExchange(requestExchange);
         Binding requestBinding = BindingBuilder.bind(requestQueue).to(requestExchange).with(name);
         admin.declareBinding(requestBinding);

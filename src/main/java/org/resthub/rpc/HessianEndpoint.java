@@ -180,7 +180,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     {
         AmqpAdmin admin = new RabbitAdmin(connectionFactory);
         Queue requestQueue = new Queue(getRequestQueueName(serviceAPI),
-                true, false, false);
+                false, false, false);
         admin.declareQueue(requestQueue);
     }
 
