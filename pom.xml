@@ -6,6 +6,8 @@
   <name>Hessian Spring AMQP</name>
   <description>RPC over Spring AMQP with Hessian</description>
   
+  <packaging>jar</packaging>
+  
   <properties>
       <spring.version>3.1.2.RELEASE</spring.version>
       <spring-rabbit.version>1.1.2.RELEASE</spring-rabbit.version>
