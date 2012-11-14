@@ -54,6 +54,8 @@ public class AMQPHessianProxyFactory implements InitializingBean
     private HessianRemoteResolver _resolver;
     private ConnectionFactory connectionFactory;
     
+    protected Class<?> serviceInterface;
+    
     private String queuePrefix;
 
     private boolean isOverloadEnabled = false;
@@ -222,6 +224,26 @@ public class AMQPHessianProxyFactory implements InitializingBean
     }
     
     /**
+     * Get the service interface
+     * @return serviceInterface
+     */
+    public Class<?> getServiceInterface(){
+        return this.serviceInterface;
+    }
+    
+    /**
+     * Set the interface implemented by the proxy.
+     * @param serviceInterface the interface the proxy must implement
+     * @throws IllegalArgumentException if serviceInterface is null or is not an interface type
+     */
+    public void setServiceInterface(Class<?> serviceInterface){
+        if (null == serviceInterface || ! serviceInterface.isInterface()){
+            throw new IllegalArgumentException("'serviceInterface' is null or is not an interface");
+        }
+        this.serviceInterface = serviceInterface;
+    }
+    
+    /**
      * Creates a new proxy from the specified interface.
      * @param api the interface
      * @return the proxy to the object with the specified interface
@@ -232,7 +254,7 @@ public class AMQPHessianProxyFactory implements InitializingBean
         if (null == api || ! api.isInterface()){
             throw new IllegalArgumentException("Parameter 'api' is required");
         }
-        
+        this.serviceInterface = api;
         AMQPHessianProxy handler = new AMQPHessianProxy(this);
         return (T) Proxy.newProxyInstance(api.getClassLoader(), new Class[]{api}, handler);
     }
