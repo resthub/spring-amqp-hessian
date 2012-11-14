@@ -16,6 +16,8 @@
  */
 package org.resthub.rpc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -37,6 +39,8 @@ import com.caucho.hessian.io.SerializerFactory;
  */
 public class HessianEndpoint implements InitializingBean, DisposableBean
 {
+    private static final Logger logger = LoggerFactory.getLogger(HessianEndpoint.class);
+    
     private Class<?> serviceAPI;
     private Object serviceImpl;
     private SerializerFactory serializerFactory;
@@ -192,6 +196,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
      */
     public void run()
     {
+        logger.debug("Launching endpoint for service : " + serviceAPI.getSimpleName());
         this.createQueue(connectionFactory, getRequestQueueName(serviceAPI));
         
         MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(

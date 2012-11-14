@@ -25,6 +25,8 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 
@@ -40,6 +42,8 @@ import com.caucho.hessian.server.HessianSkeleton;
  *
  */
 public class RawMessageDelegate {
+    
+    private static final Logger logger = LoggerFactory.getLogger(RawMessageDelegate.class);
     
     private Class<?> serviceAPI;
     private Object serviceImpl;
@@ -110,6 +114,7 @@ public class RawMessageDelegate {
         }
         catch (Exception e)
         {
+            logger.error("Exception occurs during method call", e);
             e.printStackTrace();
             compressed = false;
             response = createFaultBody(message.getBody(), e);

@@ -173,7 +173,7 @@ public class AMQPHessianProxy implements InvocationHandler
             template.setReplyTimeout(_factory.getReadTimeout());
         }
         
-        this.createQueue(connectionFactory, this.getRequestQueueName(method.getDeclaringClass()));
+        this.createQueue(connectionFactory, this.getRequestQueueName(_factory.getServiceInterface()));
         
         byte[] payload = createRequestBody(method, args);
 
@@ -187,7 +187,7 @@ public class AMQPHessianProxy implements InvocationHandler
         
         Message message = new Message(payload, messageProperties);
         Message response = template.sendAndReceive(
-                getRequestExchangeName(method.getDeclaringClass()), getRequestQueueName(method.getDeclaringClass()), message);
+                getRequestExchangeName(_factory.getServiceInterface()), getRequestQueueName(_factory.getServiceInterface()), message);
         
         return response;
     }
