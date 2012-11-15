@@ -21,7 +21,14 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Proxy;
 
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.caucho.hessian.io.AbstractHessianInput;
@@ -53,6 +60,7 @@ public class AMQPHessianProxyFactory implements InitializingBean
     private SerializerFactory _serializerFactory;
     private HessianRemoteResolver _resolver;
     private ConnectionFactory connectionFactory;
+    private RabbitTemplate template;
     
     protected Class<?> serviceInterface;
     
@@ -224,6 +232,22 @@ public class AMQPHessianProxyFactory implements InitializingBean
     }
     
     /**
+     * Get the RabbitMQ template
+     * @return rabbitTemplate
+     */
+    public RabbitTemplate getTemplate() {
+        return template;
+    }
+
+    /**
+     * Set the RabbitMQ template
+     * @param template rabbitTemplate
+     */
+    public void setTemplate(RabbitTemplate template) {
+        this.template = template;
+    }
+
+    /**
      * Get the service interface
      * @return serviceInterface
      */
@@ -250,11 +274,11 @@ public class AMQPHessianProxyFactory implements InitializingBean
      */
     @SuppressWarnings("unchecked")
     public <T> T create(Class<T> api){
-        this.afterPropertiesSet();
         if (null == api || ! api.isInterface()){
             throw new IllegalArgumentException("Parameter 'api' is required");
         }
         this.serviceInterface = api;
+        this.afterPropertiesSet();
         AMQPHessianProxy handler = new AMQPHessianProxy(this);
         return (T) Proxy.newProxyInstance(api.getClassLoader(), new Class[]{api}, handler);
     }
@@ -324,10 +348,61 @@ public class AMQPHessianProxyFactory implements InitializingBean
         return out;
     }
     
+    /**
+     * Create a queue.
+     * 
+     * @param connectionFactory
+     * @param queueName    the name of the queue
+     * @param exchangeName    the name of the exchange
+     */
+    private void createQueue(ConnectionFactory connectionFactory, String queueName, String exchangeName)
+    {
+        AmqpAdmin admin = new RabbitAdmin(connectionFactory);
+        Queue requestQueue = new Queue(queueName, false, false, false);
+        admin.declareQueue(requestQueue);
+        DirectExchange requestExchange = new DirectExchange(exchangeName, false, false);
+        admin.declareExchange(requestExchange);
+        Binding requestBinding = BindingBuilder.bind(requestQueue).to(requestExchange).with(queueName);
+        admin.declareBinding(requestBinding);
+    }
+    
+    /**
+     * Return the name of the request exchange for the service.
+     */
+    public String getRequestExchangeName(Class<?> cls)
+    {
+        String requestExchange = cls.getSimpleName();
+        if (this.queuePrefix != null)
+        {
+            requestExchange = this.queuePrefix + "." + requestExchange;
+        }
+        
+        return requestExchange;
+    }
+    
+    /**
+     * Return the name of the request queue for the service.
+     */
+    public String getRequestQueueName(Class<?> cls)
+    {
+        String requestQueue = cls.getSimpleName();
+        if (this.queuePrefix != null)
+        {
+            requestQueue = this.queuePrefix + "." + requestQueue;
+        }
+        
+        return requestQueue;
+    }
+    
     public void afterPropertiesSet(){
         if (this.connectionFactory == null){
             throw new IllegalArgumentException("Property 'connectionFactory' is required");
         }
+        if (this.template == null){
+            this.template = new RabbitTemplate(this.connectionFactory);
+        }
+        
+        this.createQueue(connectionFactory, this.getRequestQueueName(this.serviceInterface), this.getRequestExchangeName(this.serviceInterface));
     }
 }
 
