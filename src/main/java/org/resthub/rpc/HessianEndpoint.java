@@ -16,11 +16,15 @@
  */
 package org.resthub.rpc;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
@@ -46,6 +50,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     private SerializerFactory serializerFactory;
     private ConnectionFactory connectionFactory;
     private SimpleMessageListenerContainer listenerContainer;
+    private AmqpAdmin admin;
     
     private int concurentConsumers;
 
@@ -185,16 +190,14 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     }
 
     /**
-     * Create an exclusive queue.
+     * Create a queue.
      * 
-     * @param session
+     * @param admin AMQPAdmin
      * @param name    the name of the queue
      */
-    private void createQueue(ConnectionFactory connectionFactory, String name)
+    private void createQueue(AmqpAdmin admin, String name)
     {
-        AmqpAdmin admin = new RabbitAdmin(connectionFactory);
-        Queue requestQueue = new Queue(getRequestQueueName(serviceAPI),
-                false, false, false);
+        Queue requestQueue = new Queue(name, false, false, false);
         admin.declareQueue(requestQueue);
     }
 
@@ -207,7 +210,20 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     public void run()
     {
         logger.debug("Launching endpoint for service : " + serviceAPI.getSimpleName());
-        this.createQueue(connectionFactory, getRequestQueueName(serviceAPI));
+        admin = new RabbitAdmin(connectionFactory);
+        // Add connectionListener to recreate queue when connection fall
+        connectionFactory.addConnectionListener(new ConnectionListener() {
+            public void onCreate(Connection connection) {
+                 createQueue(admin, getRequestQueueName(serviceAPI));
+            }
+            
+            public void onClose(Connection connection) {
+            }
+            
+        });
+        
+        // Create the queue normaly the first time
+        this.createQueue(admin, getRequestQueueName(serviceAPI));
         
         MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(
                 new RawMessageDelegate(serviceAPI, serviceImpl, serializerFactory));

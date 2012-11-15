@@ -26,7 +26,9 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
@@ -403,6 +405,18 @@ public class AMQPHessianProxyFactory implements InitializingBean
         }
         
         this.createQueue(connectionFactory, this.getRequestQueueName(this.serviceInterface), this.getRequestExchangeName(this.serviceInterface));
+        
+        // Add connection listener to recreate queue and relinitialize template when connection fall
+        connectionFactory.addConnectionListener(new ConnectionListener() {
+            public void onCreate(Connection connection) {
+                createQueue(connectionFactory, getRequestQueueName(serviceInterface), getRequestExchangeName(serviceInterface));
+                template = new RabbitTemplate(connectionFactory);
+            }
+            
+            public void onClose(Connection connection) {
+            }
+            
+        });
     }
 }
 
