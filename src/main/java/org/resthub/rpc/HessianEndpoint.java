@@ -46,6 +46,8 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     private SerializerFactory serializerFactory;
     private ConnectionFactory connectionFactory;
     private SimpleMessageListenerContainer listenerContainer;
+    
+    private int concurentConsumers;
 
     /** The prefix of the queue created to receive the hessian requests */
     private String queuePrefix;
@@ -134,6 +136,14 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         this.connectionFactory = connectionFactory;
     }
 
+    public int getConcurentConsumers() {
+        return concurentConsumers;
+    }
+
+    public void setConcurentConsumers(int concurentConsumers) {
+        this.concurentConsumers = concurentConsumers;
+    }
+
     /**
      * Sets the serializer send collection java type.
      */
@@ -208,6 +218,9 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         listenerContainer.setConnectionFactory(connectionFactory);
         listenerContainer.setQueueNames(getRequestQueueName(serviceAPI));
         listenerContainer.setMessageListener(listenerAdapter);
+        if (this.concurentConsumers > 0){
+            listenerContainer.setConcurrentConsumers(concurentConsumers);
+        }
         listenerContainer.start();
     }
     
