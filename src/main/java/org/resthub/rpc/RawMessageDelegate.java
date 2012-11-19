@@ -45,6 +45,8 @@ public class RawMessageDelegate {
     
     private static final Logger logger = LoggerFactory.getLogger(RawMessageDelegate.class);
     
+    private static String SPRING_CORRELATION_ID = "spring_reply_correlation";
+    
     private Class<?> serviceAPI;
     private Object serviceImpl;
     private SerializerFactory serializerFactory;
@@ -103,9 +105,10 @@ public class RawMessageDelegate {
      * @return
      */
     public Message handleMessage(Message message){
+        logger.debug("Message received : " + message);
+        
         MessageProperties props = message.getMessageProperties();
         boolean compressed = "deflate".equals(props.getContentEncoding());
-
         
         byte[] response;
         try
@@ -122,6 +125,9 @@ public class RawMessageDelegate {
         
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setContentType("x-application/hessian");
+        // Spring correlation ID
+        messageProperties.setHeader(SPRING_CORRELATION_ID, 
+                message.getMessageProperties().getHeaders().get(SPRING_CORRELATION_ID));
         if (compressed)
         {
             messageProperties.setContentEncoding("deflate");

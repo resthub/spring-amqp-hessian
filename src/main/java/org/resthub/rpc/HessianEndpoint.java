@@ -133,18 +133,34 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         queuePrefix = prefix;
     }
 
+    /**
+     * Get the connectionFactory
+     * @return connectionFactory
+     */
     public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }
 
+    /**
+     * Set the connectionFactory
+     * @param connectionFactory
+     */
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
+    /**
+     * Get the number of concurent consumers
+     * @return concurentConsumers
+     */
     public int getConcurentConsumers() {
         return concurentConsumers;
     }
 
+    /**
+     * Set the number of concurent consumers
+     * @param concurentConsumers
+     */
     public void setConcurentConsumers(int concurentConsumers) {
         this.concurentConsumers = concurentConsumers;
     }
@@ -241,6 +257,9 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     }
     
     public void afterPropertiesSet() throws Exception {
+        if (this.connectionFactory == null){
+            throw new IllegalArgumentException("Property 'connectionFactory' is required");
+        }
         this.run();
     }
     

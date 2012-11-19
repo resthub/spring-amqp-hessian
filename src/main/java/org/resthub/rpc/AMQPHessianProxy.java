@@ -163,14 +163,10 @@ public class AMQPHessianProxy implements InvocationHandler
     private Message sendRequest(ConnectionFactory connectionFactory, Method method, Object[] args) throws IOException
     {
         RabbitTemplate template = this._factory.getTemplate();
-        if (_factory.getReadTimeout() > 0){
-            template.setReplyTimeout(_factory.getReadTimeout());
-        }
         
         byte[] payload = createRequestBody(method, args);
 
         MessageProperties messageProperties = new MessageProperties();
-//        messageProperties.setReplyToAddress(new Address("amq.direct", "", replyQueue.getName()));
         messageProperties.setContentType("x-application/hessian");
         if (_factory.isCompressed())
         {
@@ -179,8 +175,8 @@ public class AMQPHessianProxy implements InvocationHandler
         
         Message message = new Message(payload, messageProperties);
         Message response = template.sendAndReceive(
-                _factory.getRequestExchangeName(_factory.getServiceInterface()), 
-                _factory.getRequestQueueName(_factory.getServiceInterface()), 
+                _factory.getRequestExchangeName(_factory.getServiceInterface()),
+                _factory.getRequestQueueName(_factory.getServiceInterface()),
                 message);
         
         return response;

@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
@@ -31,6 +33,8 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.caucho.hessian.io.AbstractHessianInput;
@@ -57,12 +61,16 @@ import com.caucho.hessian.io.SerializerFactory;
  * @author Scott Ferguson
  * @author Antoine Neveu
  */
-public class AMQPHessianProxyFactory implements InitializingBean
+public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
 {
     private SerializerFactory _serializerFactory;
     private HessianRemoteResolver _resolver;
     private ConnectionFactory connectionFactory;
     private RabbitTemplate template;
+    private AmqpAdmin admin;
+    private SimpleMessageListenerContainer listener;
+    private String replyQueueName;
+    private AtomicBoolean initializing = new AtomicBoolean(false);
     
     protected Class<?> serviceInterface;
     
@@ -242,14 +250,6 @@ public class AMQPHessianProxyFactory implements InitializingBean
     }
 
     /**
-     * Set the RabbitMQ template
-     * @param template rabbitTemplate
-     */
-    public void setTemplate(RabbitTemplate template) {
-        this.template = template;
-    }
-
-    /**
      * Get the service interface
      * @return serviceInterface
      */
@@ -351,15 +351,14 @@ public class AMQPHessianProxyFactory implements InitializingBean
     }
     
     /**
-     * Create a queue.
+     * Create a queue and an exchange for requests
      * 
      * @param connectionFactory
      * @param queueName    the name of the queue
      * @param exchangeName    the name of the exchange
      */
-    private void createQueue(ConnectionFactory connectionFactory, String queueName, String exchangeName)
+    private void createRequestQueue(AmqpAdmin admin, String queueName, String exchangeName)
     {
-        AmqpAdmin admin = new RabbitAdmin(connectionFactory);
         Queue requestQueue = new Queue(queueName, false, false, false);
         admin.declareQueue(requestQueue);
         DirectExchange requestExchange = new DirectExchange(exchangeName, false, false);
@@ -369,7 +368,22 @@ public class AMQPHessianProxyFactory implements InitializingBean
     }
     
     /**
+     * Create a queue for response
+     * 
+     * @param connectionFactory
+     * @param queueName    the name of the queue
+     */
+    private Queue createReplyQueue(AmqpAdmin admin, String queueName)
+    {
+        Queue replyQueue = new Queue(queueName, false, true, false);
+        admin.declareQueue(replyQueue);
+        return replyQueue;
+    }
+    
+    /**
      * Return the name of the request exchange for the service.
+     * @param cls
+     * @return
      */
     public String getRequestExchangeName(Class<?> cls)
     {
@@ -384,6 +398,8 @@ public class AMQPHessianProxyFactory implements InitializingBean
     
     /**
      * Return the name of the request queue for the service.
+     * @param cls
+     * @return
      */
     public String getRequestQueueName(Class<?> cls)
     {
@@ -396,27 +412,81 @@ public class AMQPHessianProxyFactory implements InitializingBean
         return requestQueue;
     }
     
+    /**
+     * Return the name of the reply queue for the service
+     * @param cls
+     * @return
+     */
+    private String getReplyQueueName(Class<?> cls){
+        String uuid = UUID.randomUUID().toString();
+        String replyQueue = cls.getSimpleName() + "-reply-" + uuid;
+        if (this.queuePrefix != null)
+        {
+            replyQueue = this.queuePrefix + "." + replyQueue;
+        }
+        
+        return replyQueue;
+    }
+    
+    /**
+     * Initialize queues and the reply listener
+     */
+    private void initializeQueues(){
+        if (!initializing.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            if (admin == null){
+                admin = new RabbitAdmin(connectionFactory);
+            }
+            this.createRequestQueue(admin, this.getRequestQueueName(this.serviceInterface), this.getRequestExchangeName(this.serviceInterface));
+            if (replyQueueName == null) {
+                replyQueueName = this.getReplyQueueName(this.serviceInterface);
+            }
+            Queue replyQueue = this.createReplyQueue(admin, replyQueueName);
+            this.template.setReplyQueue(replyQueue);
+            
+            if (listener == null || !listener.isRunning()){
+                listener = new SimpleMessageListenerContainer(this.connectionFactory);
+                listener.setMessageListener(this.template);
+                listener.setQueues(replyQueue);
+                listener.start();
+            }
+        }
+        finally {
+            initializing.compareAndSet(true, false);
+        }
+    }
+    
     public void afterPropertiesSet(){
         if (this.connectionFactory == null){
             throw new IllegalArgumentException("Property 'connectionFactory' is required");
         }
-        if (this.template == null){
-            this.template = new RabbitTemplate(this.connectionFactory);
+        // initialize template
+        this.template = new RabbitTemplate(this.connectionFactory);
+        if (this.readTimeout > 0){
+            this.template.setReplyTimeout(readTimeout);
         }
+        this.initializeQueues();
         
-        this.createQueue(connectionFactory, this.getRequestQueueName(this.serviceInterface), this.getRequestExchangeName(this.serviceInterface));
-        
-        // Add connection listener to recreate queue and relinitialize template when connection fall
+        // Add connection listener to recreate queue and reinitialize template when connection fall
         connectionFactory.addConnectionListener(new ConnectionListener() {
+            
             public void onCreate(Connection connection) {
-                createQueue(connectionFactory, getRequestQueueName(serviceInterface), getRequestExchangeName(serviceInterface));
-                template = new RabbitTemplate(connectionFactory);
+                 initializeQueues();
             }
             
             public void onClose(Connection connection) {
             }
             
         });
+    }
+
+    /**
+     * Destroys the reply listener
+     */
+    public void destroy() throws Exception {
+        listener.destroy();
     }
 }
 
