@@ -1,12 +1,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+      <groupId>org.sonatype.oss</groupId>
+      <artifactId>oss-parent</artifactId>
+      <version>7</version>
+  </parent>
+  
   <groupId>org.resthub</groupId>
   <artifactId>spring-amqp-hessian</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Hessian Spring AMQP</name>
-  <description>RPC over Spring AMQP with Hessian</description>
-  
+  <version>1.0</version>
   <packaging>jar</packaging>
+  
+  <name>Hessian Spring AMQP</name>
+  <description>RPC over Spring AMQP with Hessian</description>.
+  
+  <issueManagement>
+      <system>RESThub issue tracker</system>
+      <url>https://github.com/resthub/spring-amqp-hessian/issues</url>
+  </issueManagement>
+  
+  <contributors>
+    <contributor>
+        <name>Antoine Neveu</name>
+        <timezone>+1</timezone>
+    </contributor>
+    <contributor>
+        <name>Emmanuel Bourg</name>
+        <timezone>+1</timezone>
+    </contributor>
+  </contributors>
+  
+  <licenses>
+      <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+      </license>
+  </licenses>
   
   <properties>
       <spring.version>3.1.2.RELEASE</spring.version>
