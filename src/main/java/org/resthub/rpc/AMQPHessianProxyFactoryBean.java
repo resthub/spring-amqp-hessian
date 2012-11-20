@@ -29,21 +29,7 @@ import org.springframework.beans.factory.FactoryBean;
 public class AMQPHessianProxyFactoryBean extends AMQPHessianProxyFactory
     implements FactoryBean<Object> {
     
-    private Class<?> serviceInterface;
-    
     private Object serviceProxy;
-    
-    /**
-     * Set the interface implemented by the proxy.
-     * @param serviceInterface the interface the proxy must implement
-     * @throws IllegalArgumentException if serviceInterface is null or is not an interface type
-     */
-    public void setServiceInterface(Class<?> serviceInterface){
-        if (null == serviceInterface || ! serviceInterface.isInterface()){
-            throw new IllegalArgumentException("'serviceInterface' is null or is not an interface");
-        }
-        this.serviceInterface = serviceInterface;
-    }
     
     @Override
     public void afterPropertiesSet(){

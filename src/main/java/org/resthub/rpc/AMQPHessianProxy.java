@@ -30,15 +30,9 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.caucho.hessian.client.HessianRuntimeException;
@@ -168,17 +162,11 @@ public class AMQPHessianProxy implements InvocationHandler
      */
     private Message sendRequest(ConnectionFactory connectionFactory, Method method, Object[] args) throws IOException
     {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        if (_factory.getReadTimeout() > 0){
-            template.setReplyTimeout(_factory.getReadTimeout());
-        }
-        
-        this.createQueue(connectionFactory, this.getRequestQueueName(method.getDeclaringClass()));
+        RabbitTemplate template = this._factory.getTemplate();
         
         byte[] payload = createRequestBody(method, args);
 
         MessageProperties messageProperties = new MessageProperties();
-//        messageProperties.setReplyToAddress(new Address("amq.direct", "", replyQueue.getName()));
         messageProperties.setContentType("x-application/hessian");
         if (_factory.isCompressed())
         {
@@ -186,55 +174,12 @@ public class AMQPHessianProxy implements InvocationHandler
         }
         
         Message message = new Message(payload, messageProperties);
-        Message response = template.sendAndReceive(getRequestExchangeName(method.getDeclaringClass()), message);
+        Message response = template.sendAndReceive(
+                _factory.getRequestExchangeName(_factory.getServiceInterface()),
+                _factory.getRequestQueueName(_factory.getServiceInterface()),
+                message);
         
         return response;
-    }
-    
-    
-    /**
-     * Return the name of the request exchange for the service.
-     */
-    private String getRequestExchangeName(Class<?> cls)
-    {
-        String requestExchange = cls.getSimpleName();
-        if (_factory.getQueuePrefix() != null)
-        {
-            requestExchange = _factory.getQueuePrefix() + "." + requestExchange;
-        }
-        
-        return requestExchange;
-    }
-    
-    /**
-     * Return the name of the request queue for the service.
-     */
-    private String getRequestQueueName(Class<?> cls)
-    {
-        String requestQueue = cls.getSimpleName();
-        if (_factory.getQueuePrefix() != null)
-        {
-            requestQueue = _factory.getQueuePrefix() + "." + requestQueue;
-        }
-        
-        return requestQueue;
-    }
-
-    /**
-     * Create a queue.
-     * 
-     * @param connectionFactory
-     * @param name    the name of the queue
-     */
-    private void createQueue(ConnectionFactory connectionFactory, String name)
-    {
-        AmqpAdmin admin = new RabbitAdmin(connectionFactory);
-        Queue requestQueue = new Queue(name, true, false, false);
-        admin.declareQueue(requestQueue);
-        DirectExchange requestExchange = new DirectExchange(name, true, false);
-        admin.declareExchange(requestExchange);
-        Binding requestBinding = BindingBuilder.bind(requestQueue).to(requestExchange).with(name);
-        admin.declareBinding(requestBinding);
     }
     
     /**
