@@ -53,18 +53,12 @@ public class AMQPHessianProxyTest
         connectionFactory.destroy();
     }
 
-    protected void startEndpoint()
-    {
-        System.out.println(connectionFactory);
-        EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
-        endpoint.setConnectionFactory(connectionFactory);
-        endpoint.run();
-    }
-
     @Test
     public void testEcho() throws Exception
     {
-        startEndpoint();
+        EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
+        endpoint.setConnectionFactory(connectionFactory);
+        endpoint.run();
         
         AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
@@ -74,12 +68,16 @@ public class AMQPHessianProxyTest
 
         assertEquals(message, service.echo(message));
         assertEquals(message, service.echo(message));
+        
+        endpoint.destroy();
     }
 
     @Test
     public void testException() throws Exception
     {
-        startEndpoint();
+        EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
+        endpoint.setConnectionFactory(connectionFactory);
+        endpoint.run();
         
         AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
         factory.setReadTimeout(5000);
@@ -100,6 +98,9 @@ public class AMQPHessianProxyTest
         catch (Exception e)
         {
             assertEquals("Exception message", message, e.getMessage());
+        }
+        finally {
+            endpoint.destroy();
         }
     }
 
@@ -126,6 +127,9 @@ public class AMQPHessianProxyTest
             assertTrue(cause instanceof TimeoutException);
             Thread.sleep(3000);
         }
+        finally {
+            endpoint.destroy();
+        }
     }
 
     @Test
@@ -149,6 +153,9 @@ public class AMQPHessianProxyTest
         {
             assertTrue(e.getMessage().contains("must implement java.io.Serializable"));
         }
+        finally {
+            endpoint.destroy();
+        }
     }
     
     @Test
@@ -170,6 +177,9 @@ public class AMQPHessianProxyTest
         catch (Exception e)
         {
             throw e;
+        }
+        finally {
+            endpoint.destroy();
         }
     }
 }
