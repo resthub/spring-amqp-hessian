@@ -25,6 +25,8 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 
@@ -40,6 +42,10 @@ import com.caucho.hessian.server.HessianSkeleton;
  *
  */
 public class RawMessageDelegate {
+    
+    private static final Logger logger = LoggerFactory.getLogger(RawMessageDelegate.class);
+    
+    private static String SPRING_CORRELATION_ID = "spring_reply_correlation";
     
     private Class<?> serviceAPI;
     private Object serviceImpl;
@@ -99,9 +105,10 @@ public class RawMessageDelegate {
      * @return
      */
     public Message handleMessage(Message message){
+        logger.debug("Message received : " + message);
+        
         MessageProperties props = message.getMessageProperties();
         boolean compressed = "deflate".equals(props.getContentEncoding());
-
         
         byte[] response;
         try
@@ -110,6 +117,7 @@ public class RawMessageDelegate {
         }
         catch (Exception e)
         {
+            logger.error("Exception occurs during method call", e);
             e.printStackTrace();
             compressed = false;
             response = createFaultBody(message.getBody(), e);
@@ -117,6 +125,9 @@ public class RawMessageDelegate {
         
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setContentType("x-application/hessian");
+        // Spring correlation ID
+        messageProperties.setHeader(SPRING_CORRELATION_ID, 
+                message.getMessageProperties().getHeaders().get(SPRING_CORRELATION_ID));
         if (compressed)
         {
             messageProperties.setContentEncoding("deflate");
