@@ -56,7 +56,9 @@ Objects on server side can have more attributes than same objects on client side
 Indicative performance
 ----------------------
 
-Comparative bench between spring-amqp-hessian with RabbitMQ and REST/JSON.
+In addition to the benefits of monitoring and configuration provided by RabbitMQ, it gives better performance than REST webservices.
+
+Comparative bench between spring-amqp-hessian with RabbitMQ and REST/JSON :
 
 Test with spring-amqp-hessian and RabbitMQ 2.6.1 :
 
