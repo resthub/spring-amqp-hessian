@@ -13,7 +13,7 @@
   <packaging>jar</packaging>
   
   <name>Hessian Spring AMQP</name>
-  <description>RPC over Spring AMQP with Hessian</description>.
+  <description>RPC over Spring AMQP with Hessian</description>
   
   <issueManagement>
       <system>RESThub issue tracker</system>
@@ -29,6 +29,10 @@
         <name>Emmanuel Bourg</name>
         <timezone>+1</timezone>
     </contributor>
+    <contributor>
+        <name>Sébastien Deleuze</name>
+        <timezone>+1</timezone>
+    </contributor>
   </contributors>
   
   <licenses>
@@ -39,8 +43,9 @@
   </licenses>
   
   <properties>
-      <spring.version>3.1.2.RELEASE</spring.version>
-      <spring-rabbit.version>1.1.2.RELEASE</spring-rabbit.version>
+      <spring.version>3.1.3.RELEASE</spring.version>
+      <spring-rabbit.version>1.1.3.RELEASE</spring-rabbit.version>
+      <slf4j.version>1.7.2</slf4j.version>
   </properties>
   
   <dependencies>
@@ -68,6 +73,19 @@
         <version>${spring.version}</version>
         <scope>test</scope>
     </dependency>
+
+    <!-- Without this, Spring TX 3.0.7 is included instead of Spring TX 3.1.3 -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+            <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
     
     <dependency>
         <groupId>org.springframework</groupId>
@@ -88,11 +106,17 @@
         <version>1</version>
         <scope>test</scope>
     </dependency>
+
+    <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+       <version>${slf4j.version}</version>
+    </dependency>
     
     <dependency>
        <groupId>org.slf4j</groupId>
        <artifactId>jcl-over-slf4j</artifactId>
-       <version>1.6.4</version>
+       <version>${slf4j.version}</version>
        <scope>test</scope>
     </dependency>
     
