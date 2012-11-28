@@ -9,7 +9,7 @@
   
   <groupId>org.resthub</groupId>
   <artifactId>spring-amqp-hessian</artifactId>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   
   <name>Hessian Spring AMQP</name>
@@ -20,20 +20,31 @@
       <url>https://github.com/resthub/spring-amqp-hessian/issues</url>
   </issueManagement>
   
-  <contributors>
-    <contributor>
+  <developers>
+    <developer>
+        <id>AntoineNeveu</id>
         <name>Antoine Neveu</name>
         <timezone>+1</timezone>
-    </contributor>
+    </developer>
+    <developer>
+        <id>sdeleuze</id>
+        <name>Sébastien Deleuze</name>
+        <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <contributors>
     <contributor>
         <name>Emmanuel Bourg</name>
         <timezone>+1</timezone>
-    </contributor>
-    <contributor>
-        <name>Sébastien Deleuze</name>
-        <timezone>+1</timezone>
-    </contributor>
+    </contributor>    
   </contributors>
+  
+  <scm>
+    <connection>scm:git:git@github.com:resthub/spring-amqp-hessian.git</connection>
+    <developerConnection>scm:git:git@github.com:resthub/spring-amqp-hessian.git</developerConnection>
+    <url>scm:git:git@github.com:resthub/spring-amqp-hessian.git</url>
+  </scm>
   
   <licenses>
       <license>
