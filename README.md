@@ -13,6 +13,14 @@ Usage
 
 ### Server side :
 
+Add Maven dependency to your pom.xml (artifact are available from Maven Central repository) :
+
+    <dependency>
+        <groupId>org.resthub</groupId>
+        <artifactId>resthub-rpc</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+
 Declare your service implementation and the endpoint in your Spring configuration file :
 
     <bean id="echoServiceImpl" class="org.resthub.rpc.service.EchoServiceImpl"/>
