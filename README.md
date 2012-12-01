@@ -17,7 +17,7 @@ Add Maven dependency to your pom.xml (artifact are available from Maven Central 
 
     <dependency>
         <groupId>org.resthub</groupId>
-        <artifactId>resthub-rpc</artifactId>
+        <artifactId>spring-amqp-hessian</artifactId>
         <version>1.0.0</version>
     </dependency>
 
