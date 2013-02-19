@@ -48,4 +48,9 @@
         <property name="serviceInterface" value="org.resthub.rpc.service.FailingService"/>
         <property name="readTimeout" value="5000"/>
     </bean>
+    
+    <bean id="personServiceProxy" class="org.resthub.rpc.AMQPHessianProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.jpa.service.PersonService"/>
+    </bean>
 </beans>

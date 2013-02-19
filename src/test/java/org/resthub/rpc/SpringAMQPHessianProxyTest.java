@@ -24,16 +24,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 
 import org.resthub.rpc.service.EchoService;
-import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.FailingService;
-import org.resthub.rpc.service.FailingServiceEndpoint;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 @ContextConfiguration(locations = {"classpath:applicationContext-server.xml", "classpath:applicationContext-client.xml"})
