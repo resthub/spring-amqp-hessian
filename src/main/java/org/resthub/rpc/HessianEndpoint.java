@@ -16,8 +16,6 @@
  */
 package org.resthub.rpc;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -182,7 +180,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         
         Class<?>[] interfaces = implClass.getInterfaces();
 
-        if (interfaces.length == 1)
+        if (interfaces.length > 0)
         {
             return interfaces[0];
         }

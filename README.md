@@ -28,6 +28,20 @@ Declare your service implementation and the endpoint in your Spring configuratio
         <constructor-arg index="0" ref="echoServiceImpl"/>
         <property name="connectionFactory" ref="connectionFactory" />
     </bean>
+    
+#### Hibernate/JPA Lazy objects
+
+If you are working with lazy collectiojns, you can add a custom serializer for hibernate :
+
+	<bean id="hibernateSerializerFactory" class="org.resthub.rpc.serializer.HibernateSerializerFactory" />
+	<bean id="echoEndpoint" class="org.resthub.rpc.HessianEndpoint">
+        <constructor-arg index="0" ref="echoServiceImpl"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="serializerFactory" ref="hibernateSerializerFactory" />
+    </bean>
+    
+This custom serializer will serialize initialized collections, and serialize an empty collection if it's not initialized.
+    
 
 ### Client side :
 
