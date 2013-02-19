@@ -29,9 +29,9 @@ Declare your service implementation and the endpoint in your Spring configuratio
         <property name="connectionFactory" ref="connectionFactory" />
     </bean>
     
-#### Hibernate/JPA Lazy objects
+#### Hibernate/JPA Lazy collections
 
-If you are working with lazy collectiojns, you can add a custom serializer for hibernate :
+If you are working with lazy collections, you can add a custom serializer for hibernate :
 
 	<bean id="hibernateSerializerFactory" class="org.resthub.rpc.serializer.HibernateSerializerFactory" />
 	<bean id="echoEndpoint" class="org.resthub.rpc.HessianEndpoint">
