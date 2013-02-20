@@ -13,7 +13,8 @@ Usage
 
 ### Server side :
 
-Add Maven dependency to your pom.xml (artifact are available from Maven Central repository) :
+Add Maven dependency to your pom.xml (stable artifact are available from Maven Central repository).
+Repository for SNAPSHOT versions : https://oss.sonatype.org/content/repositories/snapshots
 
     <dependency>
         <groupId>org.resthub</groupId>
