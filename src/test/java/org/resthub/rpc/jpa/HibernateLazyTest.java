@@ -41,14 +41,19 @@ public class HibernateLazyTest extends AbstractTransactionalTest {
 		
 		p.getAddresses().add(a);
 		p.getAddressesSet().add(a);
+
+        p.getMyAdresses().put("home", a);
+
 		p = this.proxy.create(p);
 		
 		Person p2 = this.proxy.findById(p.getId());
 		Assertions.assertThat(p2.getAddresses().size()).isEqualTo(0);
 		Assertions.assertThat(p2.getAddressesSet().size()).isEqualTo(0);
+        Assertions.assertThat(p2.getMyAdresses().size()).isEqualTo(0);
 		
 		Person p3 = this.proxy.findByIdWithAddress(p.getId());
 		Assertions.assertThat(p3.getAddresses().size()).isEqualTo(1);
 		Assertions.assertThat(p3.getAddressesSet().size()).isEqualTo(1);
+        Assertions.assertThat(p3.getMyAdresses().size()).isEqualTo(1);
 	}
 }

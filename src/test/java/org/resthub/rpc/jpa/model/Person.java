@@ -1,18 +1,9 @@
 package org.resthub.rpc.jpa.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Entity
 public class Person implements Serializable {
@@ -24,6 +15,7 @@ public class Person implements Serializable {
 	private Long id;
 	private List<Address> addresses;
 	private Set<Address> addressesSet;
+    private Map<String, Address> myAdresses;
 	
 	public Person(){
 		
@@ -63,7 +55,19 @@ public class Person implements Serializable {
 	public void setAddressesSet(Set<Address> addressesSet) {
 		this.addressesSet = addressesSet;
 	}
-	
-	
-	
+
+    @ElementCollection
+    @CollectionTable(name="my_addresses")
+    @MapKeyColumn (name = "address")
+    @Column(name = "myaddresses")
+    public Map<String, Address> getMyAdresses() {
+        if(this.myAdresses == null){
+            this.myAdresses = new HashMap<String, Address>();
+        }
+        return myAdresses;
+    }
+
+    public void setMyAdresses(Map<String, Address> myAdresses) {
+        this.myAdresses = myAdresses;
+    }
 }
