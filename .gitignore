@@ -4,6 +4,8 @@
 /.project
 /.classpath
 /test-output/
+*.iml
+.idea/
 
 # Package Files #
 *.jar

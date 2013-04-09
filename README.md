@@ -41,7 +41,7 @@ If you are working with lazy collections, you can add a custom serializer for hi
         <property name="serializerFactory" ref="hibernateSerializerFactory" />
     </bean>
     
-This custom serializer will serialize initialized collections, and serialize an empty collection if it's not initialized.
+This custom serializer will serialize initialized collections (List, Set or Map), and serialize an empty collection if it's not initialized.
     
 
 ### Client side :

@@ -9,6 +9,8 @@ import org.resthub.rpc.jpa.model.Person;
 import org.resthub.rpc.jpa.repository.PersonRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Named("personService")
 public class PersonServiceImpl extends
 		CrudServiceImpl<Person, Long, PersonRepository> implements
@@ -27,6 +29,7 @@ public class PersonServiceImpl extends
 		// initialize addresses
 		for (Address a : result.getAddresses());
 		for (Address a : result.getAddressesSet());
-		return result;
+        for (Map.Entry entry : result.getMyAdresses().entrySet());
+        return result;
 	}
 }
