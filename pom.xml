@@ -208,7 +208,7 @@
         <repository>
             <id>spring-release</id>
             <name>Spring Maven Release Repository</name>
-            <url>http://repo.springsource.org/libs-release</url>
+            <url>http://repo.springsource.org/libs-snapshot</url>
         </repository>
     </repositories>
 
