@@ -172,23 +172,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.resthub</groupId>
-			<artifactId>resthub-jpa</artifactId>
-			<version>${resthub.spring.stack.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
-		<dependency>
             <groupId>org.resthub</groupId>
             <artifactId>resthub-test</artifactId>
             <version>${resthub.spring.stack.version}</version>
@@ -220,4 +203,13 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+    <repositories>
+        <repository>
+            <id>spring-release</id>
+            <name>Spring Maven Release Repository</name>
+            <url>http://repo.springsource.org/libs-release</url>
+        </repository>
+    </repositories>
+
 </project>
