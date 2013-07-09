@@ -26,6 +26,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.aop.SpringProxy;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -180,7 +181,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         
         Class<?>[] interfaces = implClass.getInterfaces();
 
-        if (interfaces.length > 0)
+        if (interfaces.length > 0 && !interfaces[0].equals(SpringProxy.class))
         {
             return interfaces[0];
         }
