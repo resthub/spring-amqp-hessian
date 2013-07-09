@@ -63,9 +63,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.caucho</groupId>
+			<groupId>org.resthub</groupId>
 			<artifactId>hessian</artifactId>
-			<version>4.0.7</version>
+			<version>4.0.7.2-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
