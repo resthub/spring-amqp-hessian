@@ -56,22 +56,23 @@
 
 	<properties>
 		<spring.version>3.2.3.RELEASE</spring.version>
-		<spring-rabbit.version>1.2.0.RC1</spring-rabbit.version>
+		<spring.rabbit.version>1.2.0.RELEASE</spring.rabbit.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<resthub.spring.stack.version>2.1.1</resthub.spring.stack.version>
+        <hessian.version>4.0.8</hessian.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.resthub</groupId>
 			<artifactId>hessian</artifactId>
-			<version>4.0.8</version>
+			<version>${hessian.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit</artifactId>
-			<version>${spring-rabbit.version}</version>
+			<version>${spring.rabbit.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
