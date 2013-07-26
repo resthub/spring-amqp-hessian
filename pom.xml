@@ -9,7 +9,7 @@
 
 	<groupId>org.resthub</groupId>
 	<artifactId>spring-amqp-hessian</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Hessian Spring AMQP</name>
@@ -58,7 +58,7 @@
 		<spring.rabbit.version>1.2.0.RELEASE</spring.rabbit.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<resthub.spring.stack.version>2.1.2</resthub.spring.stack.version>
-        <hessian.version>4.0.33</hessian.version>
+        <hessian.version>4.0.8</hessian.version>
 	</properties>
 
 	<dependencies>
