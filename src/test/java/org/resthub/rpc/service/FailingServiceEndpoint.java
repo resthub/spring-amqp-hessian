@@ -42,4 +42,9 @@ public class FailingServiceEndpoint extends HessianEndpoint implements FailingSe
     {
         return this;
     }
+
+    public void error()
+    {
+        throw new StackOverflowError();
+    }
 }

@@ -35,4 +35,9 @@ public class FailingServiceImpl implements FailingService
     {
         return this;
     }
+
+    public void error()
+    {
+        throw new StackOverflowError();
+    }
 }

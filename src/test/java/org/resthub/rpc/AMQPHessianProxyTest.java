@@ -182,4 +182,30 @@ public class AMQPHessianProxyTest
             endpoint.destroy();
         }
     }
+
+    @Test
+    public void testError() throws Exception
+    {
+        FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
+        endpoint.setConnectionFactory(connectionFactory);
+        endpoint.run();
+
+        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        factory.setReadTimeout(3000);
+        factory.setConnectionFactory(connectionFactory);
+        FailingService service = factory.create(FailingService.class);
+
+        try
+        {
+            service.error();
+            fail("StackOverflowError expected");
+        }
+        catch (StackOverflowError e)
+        {
+           Thread.sleep(3000);
+        }
+        finally {
+            endpoint.destroy();
+        }
+    }
 }

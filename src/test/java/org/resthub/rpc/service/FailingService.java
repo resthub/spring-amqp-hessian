@@ -34,5 +34,10 @@ public interface FailingService
     /**
      * Returns a non serializable object.
      */
-    Object getNotSerializable(); 
+    Object getNotSerializable();
+
+    /**
+     * Throw an error instead of an exception
+     */
+    void error();
 }

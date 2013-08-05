@@ -115,7 +115,7 @@ public class RawMessageDelegate {
         {
             response = createResponseBody(message.getBody(), compressed);
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             logger.error("Exception occurs during method call", e);
             e.printStackTrace();
