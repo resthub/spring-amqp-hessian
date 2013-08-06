@@ -19,7 +19,7 @@ Repository for SNAPSHOT versions : https://oss.sonatype.org/content/repositories
     <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>spring-amqp-hessian</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </dependency>
 
 Declare your service implementation and the endpoint in your Spring configuration file :
